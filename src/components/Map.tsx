@@ -8,6 +8,7 @@ import {
 } from '@react-google-maps/api';
 import { healthcareCenters } from './healthcareCenters';
 import { useState, useCallback, useEffect } from 'react';
+import { supabase } from '@/lib/supabase'; // Import Supabase client
 
 // Extend the Window interface to include the gtag method
 declare global {
@@ -73,9 +74,32 @@ export default function Map() {
     // Fetch user's location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
           const { latitude, longitude } = position.coords;
           setUserLocation({ lat: latitude, lng: longitude });
+
+          try {
+            // Fetch geo data using Google Maps Geocoding API
+            const response = await fetch(
+              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`
+            );
+            const data = await response.json();
+            const geoData = data.results[0]?.formatted_address || 'Unknown';
+
+            // Save geo data to Supabase
+            await supabase
+              .from('user_locations')
+              .insert([{ latitude, longitude, address: geoData }]);
+
+            // Send geo data to Google Analytics
+            window.gtag('event', 'user_location', {
+              latitude,
+              longitude,
+              address: geoData,
+            });
+          } catch (error) {
+            console.error('Error fetching or saving geo data:', error);
+          }
         },
         (error) => {
           console.error('Error fetching user location:', error);
