@@ -52,6 +52,12 @@ export default function Map() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [userLocation, setUserLocation] = useState(defaultCenter);
   const [isLowBandwidth, setIsLowBandwidth] = useState(false);
+  const [userData, setUserData] = useState({
+    latitude: null,
+    longitude: null,
+    address: 'Dynamic Address', // Replace with actual address if available
+    whatsapp_joined: null, // Default to null
+  });
 
   const handleOnLoad = useCallback(() => {
     setIsLoaded(true);
@@ -71,45 +77,30 @@ export default function Map() {
       setIsLowBandwidth(true);
     }
 
-    // Fetch user's location
     if (navigator.geolocation) {
+      console.log('Attempting to fetch user location...');
       navigator.geolocation.getCurrentPosition(
-        async (position) => {
+        (position) => {
           const { latitude, longitude } = position.coords;
+          console.log('User location fetched:', { latitude, longitude });
           setUserLocation({ lat: latitude, lng: longitude });
-
-          try {
-            const payload = {
-              latitude,
-              longitude,
-              address: 'Dynamic Address', // Replace with actual address if available
-              whatsapp_joined: true, // Use whatsapp_joined
-            };
-            console.log('Payload being sent to Supabase:', payload);
-
-            const { data: supabaseData, error } = await supabase
-              .from('survey_responses') // Use survey_responses table
-              .insert([payload]);
-
-            if (error) {
-              console.error(
-                'Error inserting data into Supabase:',
-                error.message || 'Unknown error',
-                error.details || '',
-                error.hint || ''
-              );
-            } else {
-              console.log(
-                'Data successfully inserted into Supabase:',
-                supabaseData
-              );
-            }
-          } catch (error) {
-            console.error('Unexpected error during Supabase insert:', error);
-          }
+          setUserData((prev) => ({ ...prev, latitude, longitude }));
         },
         (error) => {
-          console.error('Error fetching user location:', error);
+          console.error('Error fetching user location:', error.message);
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              console.error('User denied the request for Geolocation.');
+              break;
+            case error.POSITION_UNAVAILABLE:
+              console.error('Location information is unavailable.');
+              break;
+            case error.TIMEOUT:
+              console.error('The request to get user location timed out.');
+              break;
+            default:
+              console.error('An unknown error occurred.');
+          }
         }
       );
     } else {

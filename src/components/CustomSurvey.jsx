@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import Image from 'next/image';
 
@@ -12,38 +12,84 @@ export default function CustomSurvey() {
   const [step, setStep] = useState(1);
   const [answers, setAnswers] = useState({});
   const [showSurvey, setShowSurvey] = useState(true);
+  const [userData, setUserData] = useState({
+    latitude: null,
+    longitude: null,
+    address: 'Dynamic Address',
+    whatsapp_joined: null,
+  });
+  const [isSubmitted, setIsSubmitted] = useState(false); // Track if the survey is already submitted
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      console.log('Attempting to fetch user location...');
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          console.log('User location fetched:', { latitude, longitude });
+          setUserData((prev) => ({ ...prev, latitude, longitude }));
+        },
+        (error) => {
+          console.error('Error fetching user location:', error.message);
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              console.error('User denied the request for Geolocation.');
+              break;
+            case error.POSITION_UNAVAILABLE:
+              console.error('Location information is unavailable.');
+              break;
+            case error.TIMEOUT:
+              console.error('The request to get user location timed out.');
+              break;
+            default:
+              console.error('An unknown error occurred.');
+          }
+        }
+      );
+    } else {
+      console.warn('Geolocation is not supported by this browser.');
+    }
+  }, []);
 
   const handleAnswer = (key, value) => {
+    if (isSubmitted) return; // Prevent duplicate submissions
+
     // Track question clicks
     window.gtag('event', 'survey_question_click', {
       question: key,
       answer: value,
     });
 
-    const updatedAnswers = { ...answers, [key]: value, whatsapp_joined: null }; // Set whatsapp_joined to null by default
+    const updatedAnswers = { ...answers, [key]: value };
     setAnswers(updatedAnswers);
 
     if (key === 'cares_for_girl' && value === false) {
       submitSurvey({ ...updatedAnswers, ready_for_vaccine: 'no' });
       setStep('ineligible');
+      setIsSubmitted(true); // Mark as submitted
     } else if (key === 'ready_for_vaccine') {
       submitSurvey(updatedAnswers);
       setStep('complete');
+      setIsSubmitted(true); // Mark as submitted
     } else {
       setStep(step + 1);
     }
   };
 
   async function submitSurvey(finalAnswers) {
+    if (isSubmitted) return; // Prevent duplicate submissions
+
+    const payload = { ...userData, ...finalAnswers }; // Combine user data and survey answers
     const { data, error } = await supabase
       .from('survey_responses') // Use survey_responses table
-      .insert([finalAnswers]);
+      .insert([payload]);
 
     if (error) {
       console.error('Submission error details:', JSON.stringify(error));
       alert('An error occurred while submitting the survey. Please try again.');
     } else {
       console.log('Submission successful!', data);
+      setIsSubmitted(true); // Mark as submitted after successful submission
     }
   }
 
@@ -131,8 +177,10 @@ export default function CustomSurvey() {
 
             {step === 'ineligible' && (
               <>
-                <p className="text-xl font-bold mb-4">Thank you!</p>
-                <p className="mb-4 font-medium">
+                <p className="text-xl font-extrabold text-gray-900 mb-4">
+                  Thank you!
+                </p>
+                <p className="mb-4 font-semibold text-gray-800">
                   Please share this with someone who might benefit.
                 </p>
                 <a
