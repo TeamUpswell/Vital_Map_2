@@ -2,6 +2,14 @@ import CustomSurvey from '@/components/CustomSurvey';
 import Image from 'next/image';
 import ClientMapWrapper from '@/components/ClientMapWrapper';
 
+// Ensure Supabase environment variables are defined
+if (
+  !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+) {
+  throw new Error('Supabase environment variables are missing.');
+}
+
 export default function Home() {
   return (
     <main className="relative w-full h-screen overflow-hidden">
