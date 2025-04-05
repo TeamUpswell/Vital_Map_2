@@ -87,9 +87,14 @@ export default function Map() {
             const geoData = data.results[0]?.formatted_address || 'Unknown';
 
             // Save geo data to Supabase
-            await supabase
-              .from('user_locations')
-              .insert([{ latitude, longitude, address: geoData }]);
+            await supabase.from('user_locations').insert([
+              {
+                latitude,
+                longitude,
+                address: geoData,
+                whatsapp_join: true, // Example value for whatsapp_join
+              },
+            ]);
 
             // Send geo data to Google Analytics
             window.gtag('event', 'user_location', {
