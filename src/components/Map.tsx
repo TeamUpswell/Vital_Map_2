@@ -14,6 +14,19 @@ declare global {
   interface Window {
     gtag: (event: string, action: string, params: Record<string, any>) => void;
   }
+
+  // Extend the Navigator interface to include the connection property
+  interface Navigator {
+    connection?: {
+      effectiveType?: string;
+    };
+    mozConnection?: {
+      effectiveType?: string;
+    };
+    webkitConnection?: {
+      effectiveType?: string;
+    };
+  }
 }
 
 const containerStyle = {
