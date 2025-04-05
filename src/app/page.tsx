@@ -3,13 +3,11 @@ import Image from 'next/image';
 import ClientMapWrapper from '@/components/ClientMapWrapper';
 
 // Ensure Supabase environment variables are defined
-if (typeof window !== 'undefined') {
-  if (
-    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  ) {
-    console.warn('Supabase environment variables are missing.');
-  }
+if (
+  !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+) {
+  throw new Error('Supabase environment variables are missing.');
 }
 
 export default function Home() {
