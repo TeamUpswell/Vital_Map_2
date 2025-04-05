@@ -1,5 +1,14 @@
 {
   "extends": ["next/core-web-vitals", "plugin:react/recommended"],
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "requireConfigFile": false
+  },
   "settings": {
     "react": {
       "version": "detect"
