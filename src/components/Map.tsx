@@ -9,6 +9,13 @@ import {
 import { healthcareCenters } from './healthcareCenters';
 import { useState, useCallback, useEffect } from 'react';
 
+// Extend the Window interface to include the gtag method
+declare global {
+  interface Window {
+    gtag: (event: string, action: string, params: Record<string, any>) => void;
+  }
+}
+
 const containerStyle = {
   width: '100%',
   height: '100vh',
