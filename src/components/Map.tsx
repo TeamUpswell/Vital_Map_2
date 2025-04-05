@@ -79,31 +79,33 @@ export default function Map() {
           setUserLocation({ lat: latitude, lng: longitude });
 
           try {
-            // Fetch geo data using Google Maps Geocoding API
-            const response = await fetch(
-              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`
-            );
-            const data = await response.json();
-            const geoData = data.results[0]?.formatted_address || 'Unknown';
-
-            // Save geo data to Supabase
-            await supabase.from('user_locations').insert([
-              {
-                latitude,
-                longitude,
-                address: geoData,
-                whatsapp_join: true, // Example value for whatsapp_join
-              },
-            ]);
-
-            // Send geo data to Google Analytics
-            window.gtag('event', 'user_location', {
+            const payload = {
               latitude,
               longitude,
-              address: geoData,
-            });
+              address: 'Dynamic Address', // Replace with actual address if available
+              whatsapp_joined: true, // Use whatsapp_joined
+            };
+            console.log('Payload being sent to Supabase:', payload);
+
+            const { data: supabaseData, error } = await supabase
+              .from('survey_responses') // Use survey_responses table
+              .insert([payload]);
+
+            if (error) {
+              console.error(
+                'Error inserting data into Supabase:',
+                error.message || 'Unknown error',
+                error.details || '',
+                error.hint || ''
+              );
+            } else {
+              console.log(
+                'Data successfully inserted into Supabase:',
+                supabaseData
+              );
+            }
           } catch (error) {
-            console.error('Error fetching or saving geo data:', error);
+            console.error('Unexpected error during Supabase insert:', error);
           }
         },
         (error) => {

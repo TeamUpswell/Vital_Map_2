@@ -20,7 +20,7 @@ export default function CustomSurvey() {
       answer: value,
     });
 
-    const updatedAnswers = { ...answers, [key]: value };
+    const updatedAnswers = { ...answers, [key]: value, whatsapp_joined: null }; // Set whatsapp_joined to null by default
     setAnswers(updatedAnswers);
 
     if (key === 'cares_for_girl' && value === false) {
@@ -36,7 +36,7 @@ export default function CustomSurvey() {
 
   async function submitSurvey(finalAnswers) {
     const { data, error } = await supabase
-      .from('survey_responses')
+      .from('survey_responses') // Use survey_responses table
       .insert([finalAnswers]);
 
     if (error) {
@@ -46,6 +46,12 @@ export default function CustomSurvey() {
       console.log('Submission successful!', data);
     }
   }
+
+  const handleWhatsAppClick = () => {
+    const updatedAnswers = { ...answers, whatsapp_joined: true }; // Update whatsapp_joined to true
+    setAnswers(updatedAnswers);
+    submitSurvey(updatedAnswers); // Submit updated answers
+  };
 
   const buttonClasses =
     'w-full py-3 rounded-full text-lg font-bold text-white transition duration-200 ease-in-out shadow-sm';
@@ -131,6 +137,7 @@ export default function CustomSurvey() {
                 </p>
                 <a
                   href={WHATSAPP_LINK}
+                  onClick={handleWhatsAppClick} // Track WhatsApp button click
                   className={`${buttonClasses} bg-green-500 hover:bg-green-600 inline-flex items-center justify-center mt-4`}
                 >
                   <Image
@@ -168,6 +175,7 @@ export default function CustomSurvey() {
                   </button>
                   <a
                     href={WHATSAPP_LINK}
+                    onClick={handleWhatsAppClick} // Track WhatsApp button click
                     className={`${buttonClasses} bg-green-500 hover:bg-green-600 inline-flex items-center justify-center`}
                   >
                     <Image
