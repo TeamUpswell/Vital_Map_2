@@ -12,17 +12,15 @@ export default function CustomSurvey() {
   const [step, setStep] = useState(1);
   const [answers, setAnswers] = useState({});
   const [showSurvey, setShowSurvey] = useState(true);
-  const [userData, setUserData] = useState<{
-    latitude: number | null;
-    longitude: number | null;
-    address: string;
-    whatsapp_joined: boolean | null;
-  }>({
+
+  // Use plain JavaScript for userData without TypeScript annotations
+  const [userData, setUserData] = useState({
     latitude: null,
     longitude: null,
     address: 'Dynamic Address',
     whatsapp_joined: null,
   });
+
   const [isSubmitted, setIsSubmitted] = useState(false); // Track if the survey is already submitted
 
   useEffect(() => {
@@ -32,7 +30,7 @@ export default function CustomSurvey() {
         (position) => {
           const { latitude, longitude } = position.coords;
           console.log('User location fetched:', { latitude, longitude });
-          setUserData((prev) => ({ ...prev, latitude, longitude }));
+          setUserData((prev) => ({ ...prev, latitude, longitude })); // Safely update userData
         },
         (error) => {
           console.error('Error fetching user location:', error.message);
