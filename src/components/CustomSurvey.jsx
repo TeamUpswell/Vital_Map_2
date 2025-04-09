@@ -12,7 +12,12 @@ export default function CustomSurvey() {
   const [step, setStep] = useState(1);
   const [answers, setAnswers] = useState({});
   const [showSurvey, setShowSurvey] = useState(true);
-  const [userData, setUserData] = useState({
+  const [userData, setUserData] = useState<{
+    latitude: number | null;
+    longitude: number | null;
+    address: string;
+    whatsapp_joined: boolean | null;
+  }>({
     latitude: null,
     longitude: null,
     address: 'Dynamic Address',
