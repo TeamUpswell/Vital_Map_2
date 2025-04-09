@@ -109,9 +109,11 @@ export default function CustomSurvey() {
           <div className="absolute inset-0 bg-black opacity-25"></div>
 
           <div className="bg-white rounded-xl shadow-lg w-11/12 max-w-sm p-6 text-center z-10">
-            <p className="text-lg font-semibold text-gray-900 mb-4">
-              {SURVEY_MESSAGE}
-            </p>
+            {step === 1 && ( // Show the survey message only on the first question
+              <p className="text-lg font-semibold text-gray-900 mb-4">
+                {SURVEY_MESSAGE}
+              </p>
+            )}
 
             {step === 1 && (
               <>
