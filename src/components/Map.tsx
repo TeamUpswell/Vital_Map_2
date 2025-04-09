@@ -52,11 +52,16 @@ export default function Map() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [userLocation, setUserLocation] = useState(defaultCenter);
   const [isLowBandwidth, setIsLowBandwidth] = useState(false);
-  const [userData, setUserData] = useState({
+  const [userData, setUserData] = useState<{
+    latitude: number | null;
+    longitude: number | null;
+    address: string;
+    whatsapp_joined: boolean | null;
+  }>({
     latitude: null,
     longitude: null,
-    address: 'Dynamic Address', // Replace with actual address if available
-    whatsapp_joined: null, // Default to null
+    address: 'Dynamic Address',
+    whatsapp_joined: null,
   });
 
   const handleOnLoad = useCallback(() => {
