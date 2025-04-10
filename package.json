@@ -13,7 +13,10 @@
     "@supabase/supabase-js": "^2.49.4",
     "next": "15.2.4",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "i18next": "^23.2.3",
+    "react-i18next": "^13.5.0",
+    "i18next-browser-languagedetector": "^7.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -21,6 +24,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.21",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
     "tailwindcss": "^4",
