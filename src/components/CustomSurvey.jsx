@@ -108,10 +108,10 @@ export default function CustomSurvey() {
   return (
     <>
       {showSurvey && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
+        <div className="fixed inset-0 flex items-center justify-center z-[200]">
           <div className="absolute inset-0 bg-black opacity-25"></div>
 
-          <div className="bg-white rounded-xl shadow-lg w-11/12 max-w-sm p-6 text-center z-10">
+          <div className="bg-white rounded-xl shadow-lg w-11/12 max-w-sm p-6 text-center z-[300]">
             {step === 1 && ( // Show the survey message only on the first question
               <p className="text-lg font-normal text-gray-900 mb-4">
                 {SURVEY_MESSAGE}
