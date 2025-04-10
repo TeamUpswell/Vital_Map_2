@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
@@ -65,14 +65,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <header className="fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg">
-          <button
-            onClick={toggleLanguage}
-            className="px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md hover:bg-gray-700 transition"
-          >
-            {language === 'en' ? 'Hausa' : 'English'}
-          </button>
-        </header>
         {children}
       </body>
     </html>
