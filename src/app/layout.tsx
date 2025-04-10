@@ -1,5 +1,7 @@
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
+import i18n from '@/lib/i18n'; // Import i18n
+import { useState, useEffect } from 'react';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -21,8 +23,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [language, setLanguage] = useState(i18n.language);
+  useEffect(() => {
+    i18n.on('languageChanged', (lng) => setLanguage(lng));
+  }, []);
+  const toggleLanguage = () => {
+    const newLanguage = language === 'en' ? 'ha' : 'en';
+    i18n.changeLanguage(newLanguage);
+    localStorage.setItem('i18nextLng', newLanguage); // Save preference
+    console.log('Language preference saved:', newLanguage); // Debugging log
+  };
+
   return (
-    <html lang="en">
+    <html lang={language}>
       <head>
         {/* Google Analytics */}
         <script
@@ -43,6 +56,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <div className="bg-blue-500 text-white p-4">TailwindCSS Test</div>{' '}
+        {/* Test element */}
+        <header className="fixed top-4 right-4 z-50 bg-red-500 p-4 rounded-lg shadow-lg">
+          <button
+            onClick={toggleLanguage}
+            className="px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md hover:bg-gray-700 transition"
+          >
+            {language === 'en' ? 'Hausa' : 'English'}
+          </button>
+        </header>
+        {/* Add button */}
+        <button className="map-button">Click Me</button>
         {children}
       </body>
     </html>
