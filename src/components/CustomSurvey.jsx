@@ -101,9 +101,33 @@ export default function CustomSurvey() {
   }
 
   const handleWhatsAppClick = () => {
-    const updatedAnswers = { ...answers, whatsapp_joined: true }; // Update whatsapp_joined to true
+    // Update userData directly to ensure it's included in the submission
+    setUserData(prev => ({ ...prev, whatsapp_joined: true }));
+    
+    // Also update answers state for consistency
+    const updatedAnswers = { ...answers, whatsapp_joined: true };
     setAnswers(updatedAnswers);
-    submitSurvey(updatedAnswers); // Submit updated answers
+    
+    // Combine userData and answers for submission
+    const combinedData = { 
+      ...userData, 
+      ...updatedAnswers, 
+      whatsapp_joined: true // Ensure this flag is set even if state updates haven't processed yet
+    };
+    
+    // Submit the combined data to Supabase
+    submitSurvey(combinedData);
+    
+    // Track the WhatsApp click event
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'whatsapp_click', {
+        event_category: 'engagement',
+        event_label: 'Clicked WhatsApp Link'
+      });
+    }
+    
+    // Log the action
+    console.log('WhatsApp link clicked - whatsapp_joined set to true');
   };
 
   const buttonClasses =
@@ -182,6 +206,8 @@ export default function CustomSurvey() {
                 <a
                   href={WHATSAPP_LINK}
                   onClick={handleWhatsAppClick}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={`${buttonClasses} bg-green-500 hover:bg-green-600 inline-flex items-center justify-center mt-4`}
                 >
                   <Image
@@ -228,7 +254,9 @@ export default function CustomSurvey() {
                 </p>
                 <a
                   href={WHATSAPP_LINK}
-                  onClick={handleWhatsAppClick} // Track WhatsApp button click
+                  onClick={handleWhatsAppClick}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={`${buttonClasses} bg-green-500 hover:bg-green-600 inline-flex items-center justify-center mt-4`}
                 >
                   <Image
@@ -266,7 +294,9 @@ export default function CustomSurvey() {
                   </button>
                   <a
                     href={WHATSAPP_LINK}
-                    onClick={handleWhatsAppClick} // Track WhatsApp button click
+                    onClick={handleWhatsAppClick}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className={`${buttonClasses} bg-green-500 hover:bg-green-600 inline-flex items-center justify-center`}
                   >
                     <Image
