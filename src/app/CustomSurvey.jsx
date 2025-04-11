@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/lib/supabase';
 import Image from 'next/image';
 
 export default function CustomSurvey() {
+  const { t } = useTranslation(); // Hook to fetch translations
   const [step, setStep] = useState(1);
   const [answers, setAnswers] = useState({});
   const [showSurvey, setShowSurvey] = useState(true);
@@ -49,26 +51,25 @@ export default function CustomSurvey() {
           {/* Survey Box */}
           <div className="bg-white rounded-2xl shadow-lg w-11/12 max-w-sm p-6 text-center z-10">
             <p className="text-lg font-semibold text-gray-900 mb-4">
-              We can help you find a <span className="underline">free</span> HPV
-              vaccine to protect your daughter against cervical cancer!
+              {t('survey.intro')}
             </p>
 
             {step === 1 && (
               <>
                 <p className="text-lg font-bold text-gray-900 mb-6">
-                  Do you care for a girl who is age 9 or older?
+                  {t('survey.question1')}
                 </p>
                 <button
                   onClick={() => handleAnswer('cares_for_girl', true)}
                   className={`${buttonClasses} bg-green-700 hover:bg-green-800`}
                 >
-                  Yes
+                  {t('yes')}
                 </button>
                 <button
                   onClick={() => handleAnswer('cares_for_girl', false)}
                   className={`${buttonClasses} mt-3 bg-gray-500 hover:bg-gray-600`}
                 >
-                  No
+                  {t('no')}
                 </button>
               </>
             )}
@@ -76,19 +77,19 @@ export default function CustomSurvey() {
             {step === 2 && (
               <>
                 <p className="text-lg font-bold text-gray-900 mb-6">
-                  Has she received an HPV vaccine dose already?
+                  {t('survey.question2')}
                 </p>
                 <button
                   onClick={() => handleAnswer('received_hpv_dose', true)}
                   className={`${buttonClasses} bg-green-700 hover:bg-green-800`}
                 >
-                  Yes
+                  {t('yes')}
                 </button>
                 <button
                   onClick={() => handleAnswer('received_hpv_dose', false)}
                   className={`${buttonClasses} mt-3 bg-gray-500 hover:bg-gray-600`}
                 >
-                  No
+                  {t('no')}
                 </button>
               </>
             )}
@@ -96,13 +97,13 @@ export default function CustomSurvey() {
             {step === 3 && (
               <>
                 <p className="text-lg font-bold text-gray-900 mb-6">
-                  Are you ready to have your daughter vaccinated?
+                  {t('survey.question3')}
                 </p>
                 <button
                   onClick={() => handleAnswer('ready_for_vaccine', 'yes')}
                   className={`${buttonClasses} bg-green-700 hover:bg-green-800`}
                 >
-                  Yes, I'm ready!
+                  {t('survey.ready')}
                 </button>
                 <button
                   onClick={() =>
@@ -110,17 +111,15 @@ export default function CustomSurvey() {
                   }
                   className={`${buttonClasses} mt-3 bg-yellow-500 hover:bg-yellow-600`}
                 >
-                  Not yet, I need info
+                  {t('survey.not_ready')}
                 </button>
               </>
             )}
 
             {step === 'ineligible' && (
               <>
-                <p className="text-xl font-bold mb-4">Thank you!</p>
-                <p className="mb-4 font-medium">
-                  Please share this with someone who might benefit.
-                </p>
+                <p className="text-xl font-bold mb-4">{t('survey.thank_you')}</p>
+                <p className="mb-4 font-medium">{t('survey.share')}</p>
                 <a
                   href="https://chat.whatsapp.com/Ibni0qFjVOk2Y7PUNnAORC"
                   className={`${buttonClasses} bg-green-500 hover:bg-green-600 inline-flex items-center justify-center mt-4`}
@@ -132,7 +131,7 @@ export default function CustomSurvey() {
                     alt="WhatsApp"
                     className="mr-2"
                   />
-                  Join Chat on WhatsApp
+                  {t('survey.join_whatsapp')}
                 </a>
               </>
             )}
@@ -140,15 +139,15 @@ export default function CustomSurvey() {
             {step === 'complete' && (
               <>
                 <p className="text-xl font-bold mb-4 text-gray-900">
-                  Thanks for completing!
+                  {t('survey.complete')}
                 </p>
                 {answers.ready_for_vaccine === 'yes' ? (
                   <p className="mb-4 font-medium text-gray-800">
-                    Find your nearest health center on our map below.
+                    {t('survey.find_health_center')}
                   </p>
                 ) : (
                   <p className="mb-4 font-medium text-gray-800">
-                    Join our WhatsApp group for more information.
+                    {t('survey.more_info')}
                   </p>
                 )}
                 <div className="space-y-3 mt-4">
@@ -156,7 +155,7 @@ export default function CustomSurvey() {
                     onClick={() => setShowSurvey(false)}
                     className={`${buttonClasses} bg-blue-500 hover:bg-blue-600 inline-block`}
                   >
-                    View Map
+                    {t('survey.view_map')}
                   </button>
                   <a
                     href="https://chat.whatsapp.com/Ibni0qFjVOk2Y7PUNnAORC"
@@ -169,7 +168,7 @@ export default function CustomSurvey() {
                       alt="WhatsApp"
                       className="mr-2"
                     />
-                    Join Chat on WhatsApp
+                    {t('survey.join_whatsapp')}
                   </a>
                 </div>
               </>
