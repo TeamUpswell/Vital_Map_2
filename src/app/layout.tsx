@@ -21,30 +21,23 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { t } = useTranslation();
-  const [language, setLanguage] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('i18nextLng') || 'en';
-    }
-    return 'en'; // Default to 'en' for server-side rendering
-  });
+  const { t, i18n } = useTranslation();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    i18n.changeLanguage(language);
-    i18n.on('languageChanged', (lng) => setLanguage(lng));
-    return () => {
-      i18n.off('languageChanged');
-    };
-  }, [language]);
+    setMounted(true);
+    // i18n-browser-languagedetector will have detected language by now
+  }, []);
 
   const toggleLanguage = () => {
-    const newLanguage = language === 'en' ? 'ha' : 'en';
+    const currentLang = i18n.language;
+    const newLanguage = currentLang === 'en' ? 'ha' : 'en';
     i18n.changeLanguage(newLanguage);
-    localStorage.setItem('i18nextLng', newLanguage);
   };
 
+  // Use suppressHydrationWarning to prevent hydration warnings
   return (
-    <html lang={language}>
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* Google Analytics */}
         <script
@@ -64,8 +57,18 @@ export default function RootLayout({
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         {children}
+        {mounted && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                document.documentElement.lang = "${i18n.language}";
+              `,
+            }}
+          />
+        )}
       </body>
     </html>
   );

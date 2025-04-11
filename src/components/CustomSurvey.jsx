@@ -5,14 +5,12 @@ import { supabase } from '@/lib/supabase';
 import Image from 'next/image';
 
 const WHATSAPP_LINK = 'https://chat.whatsapp.com/Ibni0qFjVOk2Y7PUNnAORC';
-const SURVEY_MESSAGE =
-  'We can help you find a free HPV vaccine to protect your daughter against cervical cancer!';
 
 export default function CustomSurvey() {
   const [step, setStep] = useState(1);
   const [answers, setAnswers] = useState({});
   const [showSurvey, setShowSurvey] = useState(true);
-
+  
   // Use plain JavaScript for userData without TypeScript annotations
   const [userData, setUserData] = useState({
     latitude: null,
@@ -23,59 +21,65 @@ export default function CustomSurvey() {
 
   const [isSubmitted, setIsSubmitted] = useState(false); // Track if the survey is already submitted
 
+  // Use useEffect for geolocation to ensure it only runs in the browser
   useEffect(() => {
-    if (navigator.geolocation) {
+    if (typeof window !== 'undefined' && navigator.geolocation) {
       console.log('Attempting to fetch user location...');
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
           console.log('User location fetched:', { latitude, longitude });
-          setUserData((prev) => ({ ...prev, latitude, longitude })); // Safely update userData
+          setUserData((prev) => ({ ...prev, latitude, longitude }));
         },
         (error) => {
           console.error('Error fetching user location:', error.message);
-          switch (error.code) {
-            case error.PERMISSION_DENIED:
-              console.error('User denied the request for Geolocation.');
-              break;
-            case error.POSITION_UNAVAILABLE:
-              console.error('Location information is unavailable.');
-              break;
-            case error.TIMEOUT:
-              console.error('The request to get user location timed out.');
-              break;
-            default:
-              console.error('An unknown error occurred.');
-          }
         }
       );
-    } else {
+    } else if (typeof window !== 'undefined') {
       console.warn('Geolocation is not supported by this browser.');
     }
+  }, []);
+
+  // Use state to track if we're on the client side
+  const [isClient, setIsClient] = useState(false);
+
+  // Set isClient to true when component mounts (client-side only)
+  useEffect(() => {
+    setIsClient(true);
   }, []);
 
   const handleAnswer = (key, value) => {
     if (isSubmitted) return; // Prevent duplicate submissions
 
-    // Track question clicks
-    window.gtag('event', 'survey_question_click', {
-      question: key,
-      answer: value,
-    });
+    // Track question clicks - only on client side
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'survey_question_click', {
+        question: key,
+        answer: value,
+      });
+    }
 
-    const updatedAnswers = { ...answers, [key]: value };
-    setAnswers(updatedAnswers);
+    try {
+      console.log(`Setting ${key} to ${value}`);
+      const updatedAnswers = { ...answers, [key]: value };
+      setAnswers(updatedAnswers);
 
-    if (key === 'cares_for_girl' && value === false) {
-      submitSurvey({ ...updatedAnswers, ready_for_vaccine: 'no' });
-      setStep('ineligible');
-      setIsSubmitted(true); // Mark as submitted
-    } else if (key === 'ready_for_vaccine') {
-      submitSurvey(updatedAnswers);
-      setStep('complete');
-      setIsSubmitted(true); // Mark as submitted
-    } else {
-      setStep(step + 1);
+      if (key === 'cares_for_girl' && value === false) {
+        console.log("Setting step to 'ineligible'");
+        setStep('ineligible');
+      } else if (key === 'received_hpv_dose' && value === true) {
+        console.log("Setting step to 'congratulations'");
+        setStep('congratulations');
+      } else if (key === 'ready_for_vaccine') {
+        console.log("Setting step to 'complete'");
+        setStep('complete');
+        submitSurvey(updatedAnswers); // Submit the survey when complete
+      } else {
+        console.log(`Incrementing step from ${step} to ${step + 1}`);
+        setStep(step + 1);
+      }
+    } catch (error) {
+      console.error("Error in handleAnswer:", error);
     }
   };
 
@@ -105,16 +109,22 @@ export default function CustomSurvey() {
   const buttonClasses =
     'w-full py-3 rounded-full text-lg font-bold text-white transition duration-200 ease-in-out shadow-sm';
 
+  // Debug what step we're on - only on client side
+  if (typeof window !== 'undefined') {
+    console.log(`Current step value: "${step}", Type: ${typeof step}`);
+    console.log(`Is step equal to 'congratulations'? ${step === 'congratulations'}`);
+  }
+
   return (
     <>
-      {showSurvey && (
+      {isClient && showSurvey && (
         <div className="fixed inset-0 flex items-center justify-center z-[200]">
           <div className="absolute inset-0 bg-black opacity-25"></div>
 
           <div className="bg-white rounded-xl shadow-lg w-11/12 max-w-sm p-6 text-center z-[300]">
             {step === 1 && ( // Show the survey message only on the first question
               <p className="text-lg font-normal text-gray-900 mb-4">
-                {SURVEY_MESSAGE}
+                We can help you find a free HPV vaccine to protect your daughter against cervical cancer!
               </p>
             )}
 
@@ -155,6 +165,31 @@ export default function CustomSurvey() {
                 >
                   No
                 </button>
+              </>
+            )}
+
+            {step === 'congratulations' && (
+              <>
+                <p className="text-xl font-bold mb-4 text-gray-900">
+                  Congratulations on protecting your girl against HPV which is the leading cause of cervical cancer. Please share this with a friend or family who might benefit.
+                </p>
+                <p className="mb-4 font-medium text-gray-800">
+                  Please share this with someone who might benefit.
+                </p>
+                <a
+                  href={WHATSAPP_LINK}
+                  onClick={handleWhatsAppClick}
+                  className={`${buttonClasses} bg-green-500 hover:bg-green-600 inline-flex items-center justify-center mt-4`}
+                >
+                  <Image
+                    src="/whatsapp.png"
+                    width={24}
+                    height={24}
+                    alt="WhatsApp"
+                    className="mr-2"
+                  />
+                  Join Chat on WhatsApp
+                </a>
               </>
             )}
 
