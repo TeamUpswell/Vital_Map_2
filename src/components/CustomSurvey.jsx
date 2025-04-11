@@ -150,8 +150,11 @@ export default function CustomSurvey() {
 
             {step === 2 && (
               <>
+                <p className="text-lg font-normal text-gray-900 mb-4">
+                Good news! She is eligible for the free HPV vaccine. 
+              </p>
                 <p className="text-lg font-bold text-gray-900 mb-6">
-                  Has she received an HPV vaccine dose already?
+                 Has she received an HPV vaccine dose already?
                 </p>
                 <button
                   onClick={() => handleAnswer('received_hpv_dose', true)}
@@ -171,10 +174,10 @@ export default function CustomSurvey() {
             {step === 'congratulations' && (
               <>
                 <p className="text-xl font-bold mb-4 text-gray-900">
-                  Congratulations on protecting your girl against HPV which is the leading cause of cervical cancer. Please share this with a friend or family who might benefit.
+                Congratulations on protecting your girl against HPV - the leading cause of cervical cancer.
                 </p>
                 <p className="mb-4 font-medium text-gray-800">
-                  Please share this with someone who might benefit.
+                You can play an important role in protecting another girl in your community. Send this map to one person you know who has a girl who is 9 or older.
                 </p>
                 <a
                   href={WHATSAPP_LINK}
@@ -221,7 +224,7 @@ export default function CustomSurvey() {
                   Thank you!
                 </p>
                 <p className="mb-4 font-semibold text-gray-800">
-                  Please share this with someone who might benefit.
+                You can still play an important role in protecting girls in your community from cervical cancer. Send this map to one person you know who has a daughter age 9 or older.
                 </p>
                 <a
                   href={WHATSAPP_LINK}
@@ -243,7 +246,7 @@ export default function CustomSurvey() {
             {step === 'complete' && (
               <>
                 <p className="text-xl font-bold mb-4 text-gray-900">
-                  Thanks for completing!
+                Get your questions answered on WhatsApp! 
                 </p>
                 {answers.ready_for_vaccine === 'yes' ? (
                   <p className="mb-4 font-medium text-gray-800">
@@ -251,7 +254,7 @@ export default function CustomSurvey() {
                   </p>
                 ) : (
                   <p className="mb-4 font-medium text-gray-800">
-                    Join our WhatsApp group for more information.
+                    Join a community of parents and talk to an expert local pharmacist about the HPV vaccine.
                   </p>
                 )}
                 <div className="space-y-3 mt-4">
