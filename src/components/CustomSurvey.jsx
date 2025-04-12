@@ -278,7 +278,7 @@ export default function CustomSurvey() {
                 </p>
                 {answers.ready_for_vaccine === 'yes' ? (
                   <p className="mb-4 font-medium text-gray-800">
-                    Find your nearest health center on our map below.
+                    Find a free HPV vaccine near you when you are ready.
                   </p>
                 ) : (
                   <p className="mb-4 font-medium text-gray-800">
@@ -290,7 +290,7 @@ export default function CustomSurvey() {
                     onClick={() => setShowSurvey(false)}
                     className={`${buttonClasses} bg-blue-500 hover:bg-blue-600 inline-block`}
                   >
-                    Fine HPV Vaccine Near You
+                    Find HPV Vaccine Near You
                   </button>
                   <a
                     href={WHATSAPP_LINK}
