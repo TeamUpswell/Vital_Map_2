@@ -117,7 +117,9 @@ export default function CustomSurvey() {
 
             {step === 'ineligible' && (
               <>
-                <p className="text-xl font-bold mb-4">{t('survey.thank_you')}</p>
+                <p className="text-xl font-bold mb-4">
+                  {t('survey.thank_you')}
+                </p>
                 <p className="mb-4 font-medium">{t('survey.share')}</p>
                 <a
                   href={WHATSAPP_LINK}
@@ -142,6 +144,27 @@ export default function CustomSurvey() {
                     {t('survey.more_info')}
                   </p>
                 )}
+                <div className="space-y-3 mt-4">
+                  <button
+                    onClick={() => setShowSurvey(false)}
+                    className={`${buttonClasses} bg-blue-500 hover:bg-blue-600 inline-block`}
+                  >
+                    Find HPV Vaccine Near You
+                  </button>
+                  <a
+                    href={WHATSAPP_LINK}
+                    className={`${buttonClasses} bg-green-500 hover:bg-green-600 inline-flex items-center justify-center`}
+                  >
+                    <Image
+                      src="/whatsapp.png"
+                      width={24}
+                      height={24}
+                      alt="WhatsApp"
+                      className="mr-2"
+                    />
+                    {t('survey.join_whatsapp')}
+                  </a>
+                </div>
               </>
             )}
           </div>

@@ -290,7 +290,7 @@ export default function CustomSurvey() {
                     onClick={() => setShowSurvey(false)}
                     className={`${buttonClasses} bg-blue-500 hover:bg-blue-600 inline-block`}
                   >
-                    View Map
+                    Fine HPV Vaccine Near You
                   </button>
                   <a
                     href={WHATSAPP_LINK}
