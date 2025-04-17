@@ -201,6 +201,17 @@ export default function Map() {
                     <strong>LGA:</strong> {selectedPlace.lga}
                   </p>
                 )}
+                {/* Show days and hours for clinics */}
+                {selectedPlace.type === 'clinic' && selectedPlace.days_of_immunization && (
+                  <p style={{ marginBottom: '4px' }}>
+                    <strong>Immunization Days:</strong> {selectedPlace.days_of_immunization}
+                  </p>
+                )}
+                {selectedPlace.type === 'clinic' && selectedPlace.hours_of_work && (
+                  <p style={{ marginBottom: '4px' }}>
+                    <strong>Hours:</strong> {selectedPlace.hours_of_work}
+                  </p>
+                )}
                 <a
                   href={`https://www.google.com/maps/search/?api=1&query=${selectedPlace.latitude},${selectedPlace.longitude}`}
                   target="_blank"
