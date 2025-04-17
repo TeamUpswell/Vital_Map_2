@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 
-const WHATSAPP_LINK = 'https://chat.whatsapp.com/Ibni0qFjVOk2Y7PUNnAORC';
+const WHATSAPP_LINK =
+  'https://api.whatsapp.com/send?text=Protect%20your%20daughter%20from%20cervical%20cancer!%20Use%20this%20map%20to%20find%20a%20free%20HPV%20vaccine.%20Or%2C%20if%20you%20have%20questions%2C%20get%20them%20answered%20by%20a%20local%20pharmacist%20over%20WhatsApp.%20Check%20it%20out%3A%20https%3A%2F%2Fvital-map.vercel.app%2F';
 
 export default function CustomSurvey() {
   const { t } = useTranslation(); // Initialize useTranslation
