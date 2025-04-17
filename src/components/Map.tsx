@@ -7,6 +7,7 @@ import {
   InfoWindow,
 } from '@react-google-maps/api';
 import { healthcareCenters } from './healthcareCenters';
+import { pharmacies } from './pharmacies'; // Import pharmacies
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/lib/supabase'; // Import Supabase client
 
@@ -38,15 +39,16 @@ const containerStyle = {
 const defaultCenter = { lat: 9.0579, lng: 7.4951 }; // Default to Abuja
 
 export default function Map() {
-  const [selectedCenter, setSelectedCenter] = useState<null | {
+  const [selectedPlace, setSelectedPlace] = useState<null | {
     id: string;
     name: string;
-    lga: string;
+    lga?: string;
     address: string;
-    days_of_immunization: string;
-    hours_of_work: string;
+    days_of_immunization?: string;
+    hours_of_work?: string;
     latitude: number;
     longitude: number;
+    type: 'clinic' | 'pharmacy';
   }>(null);
 
   const [isLoaded, setIsLoaded] = useState(false);
@@ -139,45 +141,68 @@ export default function Map() {
           center={userLocation}
           zoom={9}
         >
+          {/* Health Clinics */}
           {healthcareCenters.map((center) => (
             <MarkerF
-              key={center.id}
+              key={`clinic-${center.id}`}
               position={{ lat: center.latitude, lng: center.longitude }}
               icon={{
                 url: '/purp.png',
                 scaledSize: new window.google.maps.Size(30, 30),
               }}
               onClick={() => {
-                setSelectedCenter(center);
-                // Track map marker clicks
+                setSelectedPlace({ ...center, type: 'clinic' });
                 window.gtag('event', 'map_marker_click', {
                   center_id: center.id,
                   center_name: center.name,
+                  type: 'clinic',
+                });
+              }}
+            />
+          ))}
+          {/* Pharmacies */}
+          {pharmacies.map((pharmacy) => (
+            <MarkerF
+              key={`pharmacy-${pharmacy.id}`}
+              position={{ lat: pharmacy.latitude, lng: pharmacy.longitude }}
+              icon={{
+                url: '/pharma.png',
+                scaledSize: new window.google.maps.Size(30, 30),
+              }}
+              onClick={() => {
+                setSelectedPlace({ ...pharmacy, type: 'pharmacy' });
+                window.gtag('event', 'map_marker_click', {
+                  center_id: pharmacy.id,
+                  center_name: pharmacy.name,
+                  type: 'pharmacy',
                 });
               }}
             />
           ))}
 
-          {selectedCenter && (
+          {/* InfoWindow for both clinics and pharmacies */}
+          {selectedPlace && (
             <InfoWindow
               position={{
-                lat: selectedCenter.latitude,
-                lng: selectedCenter.longitude,
+                lat: selectedPlace.latitude,
+                lng: selectedPlace.longitude,
               }}
-              onCloseClick={() => setSelectedCenter(null)}
+              onCloseClick={() => setSelectedPlace(null)}
             >
-              <div style={{ maxWidth: '200px', color: '#000' }}>
+              <div style={{ maxWidth: '220px', color: '#000' }}>
                 <h3 style={{ fontWeight: 'bold', marginBottom: '8px' }}>
-                  {selectedCenter.name}
+                  {selectedPlace.name}
                 </h3>
                 <p style={{ marginBottom: '4px' }}>
-                  <strong>Address:</strong> {selectedCenter.address}
+                  <strong>Address:</strong> {selectedPlace.address}
                 </p>
-                <p style={{ marginBottom: '4px' }}>
-                  <strong>LGA:</strong> {selectedCenter.lga}
-                </p>
+                {selectedPlace.lga && (
+                  <p style={{ marginBottom: '4px' }}>
+                    <strong>LGA:</strong> {selectedPlace.lga}
+                  </p>
+                )}
                 <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${selectedCenter.latitude},${selectedCenter.longitude}`}
+                  href={`https://www.google.com/maps/search/?api=1&query=${selectedPlace.latitude},${selectedPlace.longitude}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: '#007BFF', textDecoration: 'underline' }}

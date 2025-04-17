@@ -4,13 +4,10 @@ import ClientMapWrapper from '@/components/ClientMapWrapper';
 import CustomSurveyWrapper from '@/components/CustomSurveyWrapper'; // Import the new client component
 
 // Ensure Supabase environment variables are defined
-if (process.env.NODE_ENV !== 'production') {
-  if (
-    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  ) {
-    throw new Error('Supabase environment variables are missing.');
-  }
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  throw new Error(
+    'Supabase environment variables are missing. Please ensure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are set in your .env file.'
+  );
 }
 
 export default function Home() {
