@@ -12,6 +12,9 @@ export default function CustomSurvey() {
   const [answers, setAnswers] = useState({});
   const [showSurvey, setShowSurvey] = useState(true);
 
+  // Add a sessionId state to track this specific session
+  const [sessionId, setSessionId] = useState('');
+
   // Use plain JavaScript for userData without TypeScript annotations
   const [userData, setUserData] = useState({
     latitude: null,
@@ -44,8 +47,19 @@ export default function CustomSurvey() {
   // Use state to track if we're on the client side
   const [isClient, setIsClient] = useState(false);
 
-  // Set isClient to true when component mounts (client-side only)
+  // Initialize session ID on mount
   useEffect(() => {
+    // Create a session ID if we don't have one
+    const storedSessionId = localStorage.getItem('surveySessionId');
+    if (!storedSessionId) {
+      // Generate a random string
+      const newId = Math.random().toString(36).substring(2, 15);
+      localStorage.setItem('surveySessionId', newId);
+      setSessionId(newId);
+    } else {
+      setSessionId(storedSessionId);
+    }
+
     setIsClient(true);
   }, []);
 
@@ -68,9 +82,13 @@ export default function CustomSurvey() {
       if (key === 'cares_for_girl' && value === false) {
         console.log("Setting step to 'ineligible'");
         setStep('ineligible');
+        // Submit survey data for "No" caregivers
+        submitSurvey(updatedAnswers);
       } else if (key === 'received_hpv_dose' && value === true) {
         console.log("Setting step to 'congratulations'");
         setStep('congratulations');
+        // Submit survey data for those with prior vaccination
+        submitSurvey(updatedAnswers);
       } else if (key === 'ready_for_vaccine') {
         console.log("Setting step to 'complete'");
         setStep('complete');
@@ -85,23 +103,62 @@ export default function CustomSurvey() {
   };
 
   async function submitSurvey(finalAnswers) {
-    if (isSubmitted) return; // Prevent duplicate submissions
+    if (isSubmitted) {
+      console.log('Preventing duplicate submission - already submitted');
+      return; // Prevent duplicate submissions
+    }
 
-    const payload = { ...userData, ...finalAnswers }; // Combine user data and survey answers
-    const { data, error } = await supabase
-      .from('survey_responses') // Use survey_responses table
-      .insert([payload]);
+    try {
+      // Set submitted state immediately to prevent double clicks
+      setIsSubmitted(true);
 
-    if (error) {
-      console.error('Submission error details:', JSON.stringify(error));
-      alert('An error occurred while submitting the survey. Please try again.');
-    } else {
-      console.log('Submission successful!', data);
-      setIsSubmitted(true); // Mark as submitted after successful submission
+      // Create a payload that matches your database columns exactly
+      const payload = {
+        // id - omitted because it's auto-generated
+        // created_at - omitted because it's auto-generated
+        
+        // Survey answers
+        cares_for_girl: finalAnswers.cares_for_girl || null,
+        received_hpv_dose: finalAnswers.received_hpv_dose || null,
+        ready_for_vaccine: finalAnswers.ready_for_vaccine || null,
+        whatsapp_joined: finalAnswers.whatsapp_joined || userData.whatsapp_joined || null,
+        
+        // Location data
+        latitude: userData.latitude || null,
+        longitude: userData.longitude || null,
+        address: userData.address || null,
+        
+        // Session tracking
+        session_id: sessionId || null,
+      };
+      
+      console.log('Data being submitted:', payload);
+      
+      const { data, error } = await supabase
+        .from('survey_responses')
+        .insert([payload]);
+
+      if (error) {
+        console.error('Submission error details:', JSON.stringify(error));
+        // Re-enable submissions on error
+        setIsSubmitted(false);
+      } else {
+        console.log('Submission successful!', data);
+        // Already set isSubmitted to true above
+      }
+    } catch (e) {
+      console.error('Unexpected error during submission:', e);
+      // Re-enable submissions on error
+      setIsSubmitted(false);
     }
   }
 
   const handleWhatsAppClick = () => {
+    if (isSubmitted) {
+      console.log('WhatsApp click - survey already submitted, not submitting again');
+      return;
+    }
+
     // Update userData directly to ensure it's included in the submission
     setUserData((prev) => ({ ...prev, whatsapp_joined: true }));
 
@@ -109,15 +166,8 @@ export default function CustomSurvey() {
     const updatedAnswers = { ...answers, whatsapp_joined: true };
     setAnswers(updatedAnswers);
 
-    // Combine userData and answers for submission
-    const combinedData = {
-      ...userData,
-      ...updatedAnswers,
-      whatsapp_joined: true, // Ensure this flag is set even if state updates haven't processed yet
-    };
-
-    // Submit the combined data to Supabase
-    submitSurvey(combinedData);
+    // Submit the combined data with only the fields that exist in your database
+    submitSurvey(updatedAnswers);
 
     // Track the WhatsApp click event
     if (typeof window !== 'undefined' && window.gtag) {
@@ -283,7 +333,7 @@ export default function CustomSurvey() {
             {step === 'complete' && (
               <>
                 <p className="text-xl font-bold mb-4 text-gray-900">
-                Find a free HPV vaccine near you when you are ready.
+                  Find a free HPV vaccine near you when you are ready.
                 </p>
                 {answers.ready_for_vaccine === 'yes' ? (
                   <p className="mb-4 font-medium text-gray-800">
