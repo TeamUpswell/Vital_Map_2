@@ -266,23 +266,7 @@ export default function CustomSurvey() {
                   girl who is 9 or older.
                 </p>
                 <a
-                  href={WHATSAPP_GROUP_LINK} // Keep as GROUP link since they're joining to ask questions
-                  onClick={handleWhatsAppClick}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`${buttonClasses} bg-green-500 hover:bg-green-600 inline-flex items-center justify-center`}
-                >
-                  <Image
-                    src="/whatsapp.png"
-                    width={24}
-                    height={24}
-                    alt="WhatsApp"
-                    className="mr-2"
-                  />
-                  Join Chat on WhatsApp
-                </a>
-                <a
-                  href={WHATSAPP_SHARE_LINK} // Change to SHARE link since they're sharing with others
+                  href={WHATSAPP_SHARE_LINK} // Should be SHARE_LINK since users are sharing with others
                   onClick={handleWhatsAppClick}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -333,11 +317,11 @@ export default function CustomSurvey() {
                   person you know who has a daughter age 9 or older.
                 </p>
                 <a
-                  href={WHATSAPP_GROUP_LINK}
+                  href={WHATSAPP_SHARE_LINK} // Change to SHARE_LINK since users are sharing with others
                   onClick={handleWhatsAppClick}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`${buttonClasses} bg-green-500 hover:bg-green-600 inline-flex items-center justify-center mt-4`}
+                  className={`${buttonClasses} bg-green-500 hover:bg-green-600 inline-flex items-center justify-center`}
                 >
                   <Image
                     src="/whatsapp.png"
@@ -346,7 +330,7 @@ export default function CustomSurvey() {
                     alt="WhatsApp"
                     className="mr-2"
                   />
-                  Join Chat on WhatsApp
+                  Share on WhatsApp
                 </a>
               </>
             )}
@@ -373,9 +357,10 @@ export default function CustomSurvey() {
                   >
                     Find HPV Vaccine Near You
                   </button>
+                  
                   <a
-                    href={WHATSAPP_GROUP_LINK} // Keep as GROUP link since they're joining to ask questions
-                    onClick={handleWhatsAppClick}
+                    href={WHATSAPP_GROUP_LINK} // Change to GROUP_LINK since users are joining the chat
+                    onClick={handleWhatsAppClick} // Add this back to track clicks
                     target="_blank"
                     rel="noopener noreferrer"
                     className={`${buttonClasses} bg-green-500 hover:bg-green-600 inline-flex items-center justify-center`}
@@ -388,21 +373,6 @@ export default function CustomSurvey() {
                       className="mr-2"
                     />
                     Join Chat on WhatsApp
-                  </a>
-                  <a
-                    href={WHATSAPP_SHARE_LINK} // Change to SHARE link since they're sharing with others
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`${buttonClasses} bg-green-500 hover:bg-green-600 inline-flex items-center justify-center`}
-                  >
-                    <Image
-                      src="/whatsapp.png"
-                      width={24}
-                      height={24}
-                      alt="WhatsApp"
-                      className="mr-2"
-                    />
-                    Share on WhatsApp
                   </a>
                 </div>
               </>
