@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import Image from 'next/image';
 
-const WHATSAPP_LINK =
+// At the top of your file, add both link types
+const WHATSAPP_GROUP_LINK = 'https://chat.whatsapp.com/EQxwtK6FrIZ6fNx9LnH7uh';
+const WHATSAPP_SHARE_LINK =
   'https://api.whatsapp.com/send?text=Protect%20your%20daughter%20from%20cervical%20cancer!%20Use%20this%20map%20to%20find%20a%20free%20HPV%20vaccine.%20Or%2C%20if%20you%20have%20questions%2C%20get%20them%20answered%20by%20a%20local%20pharmacist%20over%20WhatsApp.%20Check%20it%20out%3A%20https%3A%2F%2Fvital-map.vercel.app%2F';
 
 export default function CustomSurvey() {
@@ -116,24 +118,25 @@ export default function CustomSurvey() {
       const payload = {
         // id - omitted because it's auto-generated
         // created_at - omitted because it's auto-generated
-        
+
         // Survey answers
         cares_for_girl: finalAnswers.cares_for_girl || null,
         received_hpv_dose: finalAnswers.received_hpv_dose || null,
         ready_for_vaccine: finalAnswers.ready_for_vaccine || null,
-        whatsapp_joined: finalAnswers.whatsapp_joined || userData.whatsapp_joined || null,
-        
+        whatsapp_joined:
+          finalAnswers.whatsapp_joined || userData.whatsapp_joined || null,
+
         // Location data
         latitude: userData.latitude || null,
         longitude: userData.longitude || null,
         address: userData.address || null,
-        
+
         // Session tracking
         session_id: sessionId || null,
       };
-      
+
       console.log('Data being submitted:', payload);
-      
+
       const { data, error } = await supabase
         .from('survey_responses')
         .insert([payload]);
@@ -155,7 +158,9 @@ export default function CustomSurvey() {
 
   const handleWhatsAppClick = () => {
     if (isSubmitted) {
-      console.log('WhatsApp click - survey already submitted, not submitting again');
+      console.log(
+        'WhatsApp click - survey already submitted, not submitting again'
+      );
       return;
     }
 
@@ -261,7 +266,23 @@ export default function CustomSurvey() {
                   girl who is 9 or older.
                 </p>
                 <a
-                  href={WHATSAPP_LINK}
+                  href={WHATSAPP_GROUP_LINK} // Keep as GROUP link since they're joining to ask questions
+                  onClick={handleWhatsAppClick}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`${buttonClasses} bg-green-500 hover:bg-green-600 inline-flex items-center justify-center`}
+                >
+                  <Image
+                    src="/whatsapp.png"
+                    width={24}
+                    height={24}
+                    alt="WhatsApp"
+                    className="mr-2"
+                  />
+                  Join Chat on WhatsApp
+                </a>
+                <a
+                  href={WHATSAPP_SHARE_LINK} // Change to SHARE link since they're sharing with others
                   onClick={handleWhatsAppClick}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -274,7 +295,7 @@ export default function CustomSurvey() {
                     alt="WhatsApp"
                     className="mr-2"
                   />
-                  Join Chat on WhatsApp
+                  Share on WhatsApp
                 </a>
               </>
             )}
@@ -312,7 +333,7 @@ export default function CustomSurvey() {
                   person you know who has a daughter age 9 or older.
                 </p>
                 <a
-                  href={WHATSAPP_LINK}
+                  href={WHATSAPP_GROUP_LINK}
                   onClick={handleWhatsAppClick}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -353,7 +374,7 @@ export default function CustomSurvey() {
                     Find HPV Vaccine Near You
                   </button>
                   <a
-                    href={WHATSAPP_LINK}
+                    href={WHATSAPP_GROUP_LINK} // Keep as GROUP link since they're joining to ask questions
                     onClick={handleWhatsAppClick}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -367,6 +388,21 @@ export default function CustomSurvey() {
                       className="mr-2"
                     />
                     Join Chat on WhatsApp
+                  </a>
+                  <a
+                    href={WHATSAPP_SHARE_LINK} // Change to SHARE link since they're sharing with others
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`${buttonClasses} bg-green-500 hover:bg-green-600 inline-flex items-center justify-center`}
+                  >
+                    <Image
+                      src="/whatsapp.png"
+                      width={24}
+                      height={24}
+                      alt="WhatsApp"
+                      className="mr-2"
+                    />
+                    Share on WhatsApp
                   </a>
                 </div>
               </>
