@@ -25,6 +25,12 @@ ChartJS.register(
   Legend
 );
 
+// Add this helper function near the top of your component
+const getGoogleMapsLink = (lat, lng) => {
+  if (!lat || !lng) return null;
+  return `https://www.google.com/maps?q=${lat},${lng}`;
+};
+
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
@@ -43,6 +49,9 @@ export default function AdminDashboard() {
     whatsappJoinedCount: { yes: 0, no: 0 },
     responsesByDate: {},
   });
+
+  // Add state to track which location is being previewed
+  const [previewLocation, setPreviewLocation] = useState(null);
 
   // Simple password verification
   const authenticate = (e) => {
@@ -572,6 +581,9 @@ export default function AdminDashboard() {
                         {header.replace(/_/g, ' ')}
                       </th>
                     ))}
+                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -596,6 +608,58 @@ export default function AdminDashboard() {
                             : String(value)}
                         </td>
                       ))}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {row.latitude && row.longitude ? (
+                          <a
+                            href={getGoogleMapsLink(
+                              row.latitude,
+                              row.longitude
+                            )}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            onClick={(e) => {
+                              e.preventDefault(); // Prevent immediate navigation
+                              setPreviewLocation((prev) =>
+                                prev
+                                  ? null
+                                  : { lat: row.latitude, lng: row.longitude }
+                              );
+                            }}
+                            onMouseEnter={() =>
+                              setPreviewLocation({
+                                lat: row.latitude,
+                                lng: row.longitude,
+                              })
+                            }
+                            onMouseLeave={() => setPreviewLocation(null)}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-4 w-4 mr-1"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                            </svg>
+                            View Map
+                          </a>
+                        ) : (
+                          <span className="text-gray-400">No location</span>
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -603,6 +667,41 @@ export default function AdminDashboard() {
             </div>
           )}
         </div>
+
+        {/* Location Preview */}
+        {previewLocation && (
+          <div className="fixed bottom-4 right-4 w-64 h-64 bg-white border shadow-lg rounded-lg overflow-hidden z-50">
+            <div className="absolute top-2 right-2">
+              <button
+                onClick={() => setPreviewLocation(null)}
+                className="bg-white rounded-full p-1 hover:bg-gray-100"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <iframe
+              title="Location Preview"
+              width="100%"
+              height="100%"
+              frameBorder="0"
+              src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${previewLocation.lat},${previewLocation.lng}&zoom=14`}
+              allowFullScreen
+            />
+          </div>
+        )}
       </div>
     </div>
   );
