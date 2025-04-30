@@ -30,16 +30,8 @@ export default function CustomSurvey() {
   // Add before requesting location permission
   const [showLocationExplanation, setShowLocationExplanation] = useState(false);
 
-  // Instead of requesting location immediately, wait until a specific step
-  useEffect(() => {
-    // Only request geolocation when user reaches step 2 or after answering the first question
-    if (step === 2 || answers.cares_for_girl === true) {
-      requestGeolocation();
-    }
-  }, [step, answers.cares_for_girl]);
-
   const requestGeolocation = () => {
-    if (navigator.geolocation && !userData.latitude && !userData.longitude) {
+    if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setUserData((prev) => ({
@@ -254,10 +246,7 @@ export default function CustomSurvey() {
                 <p className="text-lg font-bold text-gray-900 mb-6">
                   Has she received an HPV vaccine dose already?
                 </p>
-                console.log("Step:", step); console.log("User location:",
-                userData.latitude, userData.longitude); console.log("Should show
-                location prompt:", step === 2 && !userData.latitude &&
-                !userData.longitude);
+                {/* Location prompt - only show in step 2 when no location data exists */}
                 {!userData.latitude && !userData.longitude && (
                   <div className="mb-6 p-3 bg-blue-50 rounded-lg border border-blue-100 text-left">
                     <p className="text-sm font-medium text-blue-800 mb-1">
@@ -269,7 +258,6 @@ export default function CustomSurvey() {
                     </p>
                     <button
                       onClick={() => {
-                        setShowLocationExplanation(false);
                         requestGeolocation();
                       }}
                       className="mt-2 px-3 py-1 bg-blue-600 text-white text-sm rounded"
