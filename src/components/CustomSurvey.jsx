@@ -27,24 +27,39 @@ export default function CustomSurvey() {
 
   const [isSubmitted, setIsSubmitted] = useState(false); // Track if the survey is already submitted
 
-  // Use useEffect for geolocation to ensure it only runs in the browser
+  // Add before requesting location permission
+  const [showLocationExplanation, setShowLocationExplanation] = useState(false);
+
+  // Instead of requesting location immediately, wait until a specific step
   useEffect(() => {
-    if (typeof window !== 'undefined' && navigator.geolocation) {
-      console.log('Attempting to fetch user location...');
+    // Only request geolocation when user reaches step 2 or after answering the first question
+    if (step === 2 || answers.cares_for_girl === true) {
+      requestGeolocation();
+    }
+  }, [step, answers.cares_for_girl]);
+
+  const requestGeolocation = () => {
+    if (navigator.geolocation && !userData.latitude && !userData.longitude) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const { latitude, longitude } = position.coords;
-          console.log('User location fetched:', { latitude, longitude });
-          setUserData((prev) => ({ ...prev, latitude, longitude }));
+          setUserData((prev) => ({
+            ...prev,
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          }));
+          // Also try to get address with reverse geocoding if needed
         },
         (error) => {
-          console.error('Error fetching user location:', error.message);
+          console.log('Geolocation error:', error);
+        },
+        {
+          enableHighAccuracy: false, // Set to false to reduce battery usage
+          timeout: 10000, // 10 seconds timeout
+          maximumAge: 600000, // Cache position for 10 minutes
         }
       );
-    } else if (typeof window !== 'undefined') {
-      console.warn('Geolocation is not supported by this browser.');
     }
-  }, []);
+  };
 
   // Use state to track if we're on the client side
   const [isClient, setIsClient] = useState(false);
@@ -239,6 +254,26 @@ export default function CustomSurvey() {
                 <p className="text-lg font-bold text-gray-900 mb-6">
                   Has she received an HPV vaccine dose already?
                 </p>
+                {!userData.latitude && !userData.longitude && (
+                  <div className="mb-6 p-3 bg-blue-50 rounded-lg border border-blue-100 text-left">
+                    <p className="text-sm font-medium text-blue-800 mb-1">
+                      🔍 Help us find vaccines close to you
+                    </p>
+                    <p className="text-sm text-blue-700">
+                      By sharing your location, we can show you the nearest
+                      clinics offering free HPV vaccines in your area.
+                    </p>
+                    <button
+                      onClick={() => {
+                        setShowLocationExplanation(false);
+                        requestGeolocation();
+                      }}
+                      className="mt-2 px-3 py-1 bg-blue-600 text-white text-sm rounded"
+                    >
+                      Share My Location
+                    </button>
+                  </div>
+                )}
                 <button
                   onClick={() => handleAnswer('received_hpv_dose', true)}
                   className={`${buttonClasses} bg-green-700 hover:bg-green-800`}
@@ -357,7 +392,7 @@ export default function CustomSurvey() {
                   >
                     Find HPV Vaccine Near You
                   </button>
-                  
+
                   <a
                     href={WHATSAPP_GROUP_LINK} // Change to GROUP_LINK since users are joining the chat
                     onClick={handleWhatsAppClick} // Add this back to track clicks
