@@ -53,6 +53,38 @@ export default function AdminDashboard() {
   // Add state to track which location is being previewed
   const [previewLocation, setPreviewLocation] = useState(null);
 
+  // Add this state and functions near the beginning of your component
+  const [hidePreviewTimeout, setHidePreviewTimeout] = useState(null);
+
+  const handleShowPreview = (lat, lng) => {
+    // Clear any existing timeout
+    if (hidePreviewTimeout) {
+      clearTimeout(hidePreviewTimeout);
+      setHidePreviewTimeout(null);
+    }
+
+    // Show the preview
+    setPreviewLocation({ lat, lng });
+  };
+
+  const handleHidePreview = () => {
+    // Set a timeout before hiding the preview
+    const timeoutId = setTimeout(() => {
+      setPreviewLocation(null);
+    }, 1500); // 1.5 second delay
+
+    setHidePreviewTimeout(timeoutId);
+  };
+
+  // Clean up timeout when component unmounts
+  useEffect(() => {
+    return () => {
+      if (hidePreviewTimeout) {
+        clearTimeout(hidePreviewTimeout);
+      }
+    };
+  }, [hidePreviewTimeout]);
+
   // Simple password verification
   const authenticate = (e) => {
     e.preventDefault();
@@ -620,19 +652,12 @@ export default function AdminDashboard() {
                             className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                             onClick={(e) => {
                               e.preventDefault(); // Prevent immediate navigation
-                              setPreviewLocation((prev) =>
-                                prev
-                                  ? null
-                                  : { lat: row.latitude, lng: row.longitude }
-                              );
+                              handleShowPreview(row.latitude, row.longitude);
                             }}
                             onMouseEnter={() =>
-                              setPreviewLocation({
-                                lat: row.latitude,
-                                lng: row.longitude,
-                              })
+                              handleShowPreview(row.latitude, row.longitude)
                             }
-                            onMouseLeave={() => setPreviewLocation(null)}
+                            onMouseLeave={handleHidePreview}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -670,7 +695,15 @@ export default function AdminDashboard() {
 
         {/* Location Preview */}
         {previewLocation && (
-          <div className="fixed bottom-4 right-4 w-64 h-64 bg-white border shadow-lg rounded-lg overflow-hidden z-50">
+          <div
+            className="fixed bottom-4 right-4 w-64 h-64 bg-white border shadow-lg rounded-lg overflow-hidden z-50"
+            onMouseEnter={() => {
+              if (hidePreviewTimeout) {
+                clearTimeout(hidePreviewTimeout);
+                setHidePreviewTimeout(null);
+              }
+            }}
+          >
             <div className="absolute top-2 right-2">
               <button
                 onClick={() => setPreviewLocation(null)}
@@ -697,7 +730,7 @@ export default function AdminDashboard() {
               width="100%"
               height="100%"
               frameBorder="0"
-              src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${previewLocation.lat},${previewLocation.lng}&zoom=14`}
+              src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${previewLocation.lat},${previewLocation.lng}&zoom=11`}
               allowFullScreen
             />
           </div>
