@@ -254,6 +254,10 @@ export default function CustomSurvey() {
                 <p className="text-lg font-bold text-gray-900 mb-6">
                   Has she received an HPV vaccine dose already?
                 </p>
+                console.log("Step:", step); console.log("User location:",
+                userData.latitude, userData.longitude); console.log("Should show
+                location prompt:", step === 2 && !userData.latitude &&
+                !userData.longitude);
                 {!userData.latitude && !userData.longitude && (
                   <div className="mb-6 p-3 bg-blue-50 rounded-lg border border-blue-100 text-left">
                     <p className="text-sm font-medium text-blue-800 mb-1">
