@@ -334,7 +334,9 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">HPV Vaccine Survey Dashboard</h1>
+          <h1 className="text-3xl font-extrabold text-gray-800">
+            HPV Vaccine Survey Dashboard
+          </h1>
           <button
             onClick={handleLogout}
             className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
@@ -346,13 +348,13 @@ export default function AdminDashboard() {
         {/* Summary Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-sm uppercase text-gray-500 font-medium">
+            <h3 className="text-sm uppercase text-gray-600 font-semibold">
               Total Responses
             </h3>
             <p className="text-3xl font-bold mt-1">{stats.totalResponses}</p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-sm uppercase text-gray-500 font-medium">
+            <h3 className="text-sm uppercase text-gray-600 font-semibold">
               Eligible (Cares for Girl)
             </h3>
             <p className="text-3xl font-bold mt-1">
@@ -367,7 +369,7 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-sm uppercase text-gray-500 font-medium">
+            <h3 className="text-sm uppercase text-gray-600 font-semibold">
               Already Vaccinated
             </h3>
             <p className="text-3xl font-bold mt-1">
@@ -385,7 +387,7 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-sm uppercase text-gray-500 font-medium">
+            <h3 className="text-sm uppercase text-gray-600 font-semibold">
               WhatsApp Conversions
             </h3>
             <p className="text-3xl font-bold mt-1">
@@ -403,7 +405,7 @@ export default function AdminDashboard() {
 
         {/* Filter Controls */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-lg font-semibold mb-4">Filter Data</h2>
+          <h2 className="text-xl font-bold mb-4 text-gray-800">Filter Data</h2>
           <form
             onSubmit={handleFilterSubmit}
             className="flex flex-wrap gap-4 items-end"
@@ -455,7 +457,7 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* First row of charts */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-lg font-semibold mb-4">
+            <h2 className="text-xl font-bold mb-4 text-gray-800">
               Cares for Girl Responses
             </h2>
             <div className="h-64">
@@ -466,7 +468,9 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-lg font-semibold mb-4">Received HPV Dose</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">
+              Received HPV Dose
+            </h2>
             <div className="h-64">
               <Pie
                 data={receivedDoseData}
@@ -477,7 +481,9 @@ export default function AdminDashboard() {
 
           {/* Second row of charts */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-lg font-semibold mb-4">Ready for Vaccine</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">
+              Ready for Vaccine
+            </h2>
             <div className="h-64">
               <Pie
                 data={readyForVaccineData}
@@ -486,7 +492,9 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-lg font-semibold mb-4">WhatsApp Joined</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">
+              WhatsApp Joined
+            </h2>
             <div className="h-64">
               <Pie
                 data={whatsappJoinedData}
@@ -498,7 +506,9 @@ export default function AdminDashboard() {
 
         {/* Daily Responses Chart (full width) */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-lg font-semibold mb-4">Responses by Date</h2>
+          <h2 className="text-xl font-bold mb-4 text-gray-800">
+            Responses by Date
+          </h2>
           <div className="h-64">
             <Bar
               data={responsesByDateData}
@@ -520,7 +530,9 @@ export default function AdminDashboard() {
         {/* Raw Data Table */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold">Survey Responses</h2>
+            <h2 className="text-xl font-bold text-gray-800">
+              Survey Responses
+            </h2>
             <button
               onClick={exportToCSV}
               disabled={surveyData.length === 0}
@@ -555,7 +567,7 @@ export default function AdminDashboard() {
                     {Object.keys(surveyData[0]).map((header) => (
                       <th
                         key={header}
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider"
                       >
                         {header.replace(/_/g, ' ')}
                       </th>
